@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Олег Цыро](https://up.htmlacademy.ru/javascript/4/user/150948).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Духовняк](https://up.htmlacademy.ru/javascript/4/user/126025).
 
 ---
 

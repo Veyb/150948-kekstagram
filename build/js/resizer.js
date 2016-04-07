@@ -94,9 +94,10 @@
       this._ctx.strokeStyle = '#ffe753';
       // Размер штрихов. Первый элемент массива задает длину штриха, второй
       // расстояние между соседними штрихами.
-      this._ctx.setLineDash([15, 10]);
+      this._ctx.lineCap = 'round';
+      this._ctx.setLineDash([0, 11]);
       // Смещение первого штриха от начала линии.
-      this._ctx.lineDashOffset = 7;
+      this._ctx.lineDashOffset = 9;
 
       // Сохранение состояния канваса.
       // Подробней см. строку 155.

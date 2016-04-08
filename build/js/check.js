@@ -1,27 +1,39 @@
-function getSum(arr) {
+function getSum(a) {
   var arrSum = 0;
-  for (var i = 0; i < arr.length; i++) {
-    arrSum += arr[i];
+  for (var i = 0; i < a.length; i++) {
+    arrSum += a[i];
   }
   return arrSum
 };
 
+function getMult(a, b) {
+  var arrMult = 0;
+  for (var i = 0; i < a.length; i++) {
+    arrMult += a[i] * b[i];
+  }
+  return arrMult
+};
+
 function getMessage(a, b) {
-  var sum = getSum(a);
-  var c = a * b;
-  var square = getSum(c);
+  var typeA = typeof a;
 
-  if (typeof a === 'boolean') {
-    if (a === true) {return 'Переданное GIF-изображение анимировано и содержит ' + b + ' кадров'; }
-    if (a === false) {return 'Переданное GIF-изображение не анимировано'; }
-  }
-
-  if (typeof a === 'number') {return 'Переданное SVG-изображение содержит ' + a + ' объектов и '+ (b * 4) + ' атрибутов'
-  }
-
-  if (typeof a === 'object') {return 'Количество красных точек во всех строчках изображения: ' + sum
-  }
-
-  if (typeof a === 'object' || typeof b === 'object') {return 'Общая площадь артефактов сжатия: ' + square + ' пикселей'
+  switch (typeA) {
+    case 'boolean':
+      return (a)
+        ? 'Переданное GIF-изображение анимировано и содержит ' + b + ' кадров'
+        : 'Переданное GIF-изображение не анимировано';
+      break;
+    case 'number':
+      return 'Переданное SVG-изображение содержит ' + a + ' объектов и '+ (b * 4) + ' атрибутов';
+      break;
+    default:
+      if (Array.isArray(a)) {
+        var sum = getSum(a);
+        return 'Количество красных точек во всех строчках изображения: ' + sum;
+      } else if (Array.isArray(a) && Array.isArray(b)) {
+        var c = getMult(a, b);
+        var square = getSum(c);
+        return 'Общая площадь артефактов сжатия: ' + square + ' пикселей';
+      }
   }
 };

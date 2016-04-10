@@ -235,6 +235,25 @@ body {
   border: 0;
 }
 
+.tooltip-message {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  z-index: 2;
+
+  width: 430px;
+  padding: 5px;
+  margin-left: -37%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 2px solid red;
+  opacity: 0.8;
+
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  color: #ffffff;
+}
+
 .upload-resize-controls input {
   width: 3em;
   margin-top: -3px;

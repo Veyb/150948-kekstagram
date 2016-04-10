@@ -71,14 +71,70 @@
   var leftSize = document.getElementById('resize-x');
   var topSize = document.getElementById('resize-y');
   var squareSize = document.getElementById('resize-size');
-  var imgWidth = 0;
-  var imgHeight = 0;
+
+  var tooltipMessage = document.querySelector('.tooltip-message');
+
+  /** @enum {number} */
+  var Tooltip = {
+    ZERO: 0,
+    MORE: 1,
+    SUM: 2
+  };
+
+  function showTooltip(action, message) {
+
+    switch (action) {
+      case Tooltip.ZERO:
+        message = message || 'Все поля должны быть заполены';
+        break;
+
+      case Tooltip.MORE:
+        message = message || 'Поля &laquo;сверху&raquo; и &laquo;слева&raquo; не могут быть отрицательными, а поле &laquo;сторона&raquo; должно быть больше нуля';
+        break;
+
+      case Tooltip.SUM:
+        message = message || '&laquo;Кадр&raquo; должен находиться в пределах исходного изображения.';
+        break;
+    }
+
+    tooltipMessage.innerHTML = message;
+    tooltipMessage.classList.remove('invisible');
+    return tooltipMessage;
+  }
+
+  function hideTooltip() {
+    tooltipMessage.classList.add('invisible');
+  }
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    var imgWidth = currentResizer._image.naturalWidth;
+    var imgHeight = currentResizer._image.naturalHeight;
+    var xSize = (parseInt(leftSize.value, 10) + parseInt(squareSize.value, 10));
+    var ySize = (parseInt(topSize.value, 10) + parseInt(squareSize.value, 10));
+
+    if (!leftSize.value || !topSize.value || !squareSize.value) {
+      btnNextForm.setAttribute('disabled', '');
+      hideTooltip();
+      showTooltip(Tooltip.ZERO);
+      return false;
+    } else if ((leftSize.value < 0) || (topSize.value < 0) || (squareSize.value < 1)) {
+      btnNextForm.setAttribute('disabled', '');
+      hideTooltip();
+      showTooltip(Tooltip.MORE);
+      return false;
+    } else if ((xSize > imgWidth) || (ySize > imgHeight)) {
+      btnNextForm.setAttribute('disabled', '');
+      hideTooltip();
+      showTooltip(Tooltip.SUM);
+      return false;
+    } else {
+      btnNextForm.removeAttribute('disabled');
+      hideTooltip();
+      return true;
+    }
   }
 
   /**
@@ -161,23 +217,11 @@
           currentResizer.setElement(resizeForm);
           uploadMessage.classList.add('invisible');
 
-          imgWidth = currentResizer._image.naturalWidth;
-          imgHeight = currentResizer._image.naturalHeight;
-
-          squareSize.max = Math.min(imgWidth, imgHeight);
-          leftSize.min = 0;
-          topSize.min = 0;
-          squareSize.min = 1;
-          leftSize.max = imgWidth - squareSize.max;
-          topSize.max = imgHeight - squareSize.max;
-          // console.log(imgWidth);
-          // console.log(currentResizer._image.naturalWidth);
-          // console.log(currentResizer._resizeConstraint);
-          // console.log(resizeForm);
           uploadForm.classList.add('invisible');
           resizeForm.classList.remove('invisible');
 
           hideMessage();
+          resizeFormIsValid();
         };
 
         fileReader.readAsDataURL(element.files[0]);
@@ -204,30 +248,8 @@
     uploadForm.classList.remove('invisible');
   };
 
-  squareSize.onchange = function() {
-    if (squareSize.value > squareSize.max) {
-      // squareSize.value = squareSize.max;
-      squareSize.max = Math.min(imgWidth, imgHeight);
-    }
-
-    if (squareSize.max > 1) {
-      leftSize.max = imgWidth - squareSize.value;
-      topSize.max = imgHeight - squareSize.value;
-      console.log(squareSize.max);
-    }
-  };
-
   resizeForm.onchange = function() {
-
-    // if (squareSize.max > Math.min(imgWidth, imgHeight)) {
-    //   squareSize.max = Math.min(imgWidth, imgHeight);
-    // }
-
-
-    // if ((leftSize.value + squareSize.value) > currentResizer._image.naturalWidth ||
-    // (topSize.value + squareSize.value) > currentResizer._image.naturalHeight) {
-    //   return false;
-    // }
+    resizeFormIsValid();
   };
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
@@ -242,10 +264,6 @@
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
-    }
-
-    if (!resizeFormIsValid()) {
-      btnNextForm.setAttribute('disabled');
     }
   };
 

@@ -67,12 +67,74 @@
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
 
+  var btnNextForm = document.getElementById('resize-fwd');
+  var leftSize = document.getElementById('resize-x');
+  var topSize = document.getElementById('resize-y');
+  var squareSize = document.getElementById('resize-size');
+
+  var tooltipMessage = document.querySelector('.tooltip-message');
+
+  /** @enum {number} */
+  var Tooltip = {
+    ZERO: 0,
+    MORE: 1,
+    SUM: 2
+  };
+
+  function showTooltip(action, message) {
+
+    switch (action) {
+      case Tooltip.ZERO:
+        message = message || 'Все поля должны быть заполены';
+        break;
+
+      case Tooltip.MORE:
+        message = message || 'Поля &laquo;сверху&raquo; и &laquo;слева&raquo; не могут быть отрицательными, а поле &laquo;сторона&raquo; должно быть больше нуля';
+        break;
+
+      case Tooltip.SUM:
+        message = message || '&laquo;Кадр&raquo; должен находиться в пределах исходного изображения.';
+        break;
+    }
+
+    tooltipMessage.innerHTML = message;
+    tooltipMessage.classList.remove('invisible');
+    return tooltipMessage;
+  }
+
+  function hideTooltip() {
+    tooltipMessage.classList.add('invisible');
+  }
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    var imgWidth = currentResizer._image.naturalWidth;
+    var imgHeight = currentResizer._image.naturalHeight;
+    var xSize = (parseInt(leftSize.value, 10) + parseInt(squareSize.value, 10));
+    var ySize = (parseInt(topSize.value, 10) + parseInt(squareSize.value, 10));
+
+    if (!leftSize.value || !topSize.value || !squareSize.value) {
+      btnNextForm.setAttribute('disabled', '');
+      hideTooltip();
+      showTooltip(Tooltip.ZERO);
+      return false;
+    } else if ((leftSize.value < 0) || (topSize.value < 0) || (squareSize.value < 1)) {
+      btnNextForm.setAttribute('disabled', '');
+      hideTooltip();
+      showTooltip(Tooltip.MORE);
+      return false;
+    } else if ((xSize > imgWidth) || (ySize > imgHeight)) {
+      btnNextForm.setAttribute('disabled', '');
+      hideTooltip();
+      showTooltip(Tooltip.SUM);
+      return false;
+    } else {
+      btnNextForm.removeAttribute('disabled');
+      hideTooltip();
+      return true;
+    }
   }
 
   /**
@@ -86,7 +148,6 @@
    * @type {HTMLFormElement}
    */
   var resizeForm = document.forms['upload-resize'];
-
   /**
    * Форма добавления фильтра.
    * @type {HTMLFormElement}
@@ -160,6 +221,7 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
+          resizeFormIsValid();
         };
 
         fileReader.readAsDataURL(element.files[0]);
@@ -186,6 +248,9 @@
     uploadForm.classList.remove('invisible');
   };
 
+  resizeForm.onchange = function() {
+    resizeFormIsValid();
+  };
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.

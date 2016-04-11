@@ -198,6 +198,12 @@ body {
   background: rgba(255, 231, 83, 0.2) url("../img/icon-arrow.png") center no-repeat;
 }
 
+.upload-form-controls-fwd:disabled {
+  background-color: rgba(255, 255, 255, 0.3);
+  opacity: 0.6;
+  border: 2px solid red;
+}
+
 .upload-resize canvas {
   position: absolute;
   top: 50%;
@@ -227,6 +233,25 @@ body {
   color: #ffffff;
 
   border: 0;
+}
+
+.tooltip-message {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  z-index: 2;
+
+  width: 430px;
+  padding: 5px;
+  margin-left: -37%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 2px solid red;
+  opacity: 0.8;
+
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  color: #ffffff;
 }
 
 .upload-resize-controls input {

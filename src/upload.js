@@ -270,35 +270,34 @@ var browserCookies = require('browser-cookies');
     if (birthdayDate > actualDate) {
       birthdayDate.setFullYear(actualYear - 1, 11, 27);
     }
-    
+
     var cookieLifetime = Math.ceil((actualDate.valueOf() - birthdayDate.valueOf()) / DAY);
 
     browserCookies.set('saveFilter', lastFilter, {
       expires: cookieLifetime
     });
-  };
+  }
 
   function getFilter() {
     var filterNone = document.getElementById('upload-filter-none');
     var filterChrome = document.getElementById('upload-filter-chrome');
     var filterSepia = document.getElementById('upload-filter-sepia');
 
-    var getFilter = browserCookies.get('saveFilter');
+    var currentFilter = browserCookies.get('saveFilter');
 
-    if (getFilter) {
-      if (getFilter === 'filter-none') {
+    if (currentFilter) {
+      if (currentFilter === 'filter-none') {
         filterNone.setAttribute('checked', '');
       }
-      if (getFilter === 'filter-chrome') {
+      if (currentFilter === 'filter-chrome') {
         filterChrome.setAttribute('checked', '');
       }
-      if (getFilter === 'filter-sepia') {
+      if (currentFilter === 'filter-sepia') {
         filterSepia.setAttribute('checked', '');
       }
-
-      return filterImage.classList.add(getFilter);
     }
-  };
+    return filterImage.classList.add(currentFilter);
+  }
 
   // var filterNone = document.getElementById('upload-filter-none');
   // var filterChrome = document.getElementById('upload-filter-chrome');

@@ -291,16 +291,16 @@ var browserCookies = require('browser-cookies');
       var saveFilter = browserCookies.get('saveFilter');
 
       if (saveFilter) {
-        if (saveFilter == 'filter-none') {
+        if (saveFilter === 'filter-none') {
           filterNone.setAttribute('checked', '');
         }
-        if (saveFilter == 'filter-chrome') {
+        if (saveFilter === 'filter-chrome') {
           filterChrome.setAttribute('checked', '');
         }
-        if (saveFilter == 'filter-sepia') {
+        if (saveFilter === 'filter-sepia') {
           filterSepia.setAttribute('checked', '');
         }
-        return filterImage.classList.add(saveFilter);
+        filterImage.classList.add(saveFilter);
       }
     }
   };

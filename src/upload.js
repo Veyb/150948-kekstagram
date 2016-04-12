@@ -270,9 +270,33 @@ var browserCookies = require('browser-cookies');
     return Math.ceil((actualDate.valueOf() - birthdayDate.valueOf()) / (DAY));
   })();
 
-  var filterNone = document.getElementById('upload-filter-none');
-  var filterChrome = document.getElementById('upload-filter-chrome');
-  var filterSepia = document.getElementById('upload-filter-sepia');
+  
+
+  function getFilter() {
+    var filterNone = document.getElementById('upload-filter-none');
+    var filterChrome = document.getElementById('upload-filter-chrome');
+    var filterSepia = document.getElementById('upload-filter-sepia');
+
+    var getFilter = browserCookies.get('saveFilter');
+
+    if (getFilter) {
+      if (getFilter === 'filter-none') {
+        filterNone.setAttribute('checked', '');
+      }
+      if (getFilter === 'filter-chrome') {
+        filterChrome.setAttribute('checked', '');
+      }
+      if (getFilter === 'filter-sepia') {
+        filterSepia.setAttribute('checked', '');
+      }
+
+      return filterImage.classList.add(getFilter);
+    }
+  };
+
+  // var filterNone = document.getElementById('upload-filter-none');
+  // var filterChrome = document.getElementById('upload-filter-chrome');
+  // var filterSepia = document.getElementById('upload-filter-sepia');
 
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
@@ -288,20 +312,7 @@ var browserCookies = require('browser-cookies');
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
 
-      var saveFilter = browserCookies.get('saveFilter');
-
-      if (saveFilter) {
-        if (saveFilter === 'filter-none') {
-          filterNone.setAttribute('checked', '');
-        }
-        if (saveFilter === 'filter-chrome') {
-          filterChrome.setAttribute('checked', '');
-        }
-        if (saveFilter === 'filter-sepia') {
-          filterSepia.setAttribute('checked', '');
-        }
-        filterImage.classList.add(saveFilter);
-      }
+      getFilter();
     }
   };
 

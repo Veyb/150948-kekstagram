@@ -259,18 +259,24 @@ var browserCookies = require('browser-cookies');
   var HOUR = 60 * MINUTE;
   var DAY = 24 * HOUR;
 
-  var actualDate = new Date();
-  var actualYear = actualDate.getFullYear();
-  var birthdayDate = new Date(actualYear, 11, 27);
+  function saveFilter() {
+    var actualDate = new Date();
+    var actualYear = actualDate.getFullYear();
+    var birthdayDate = new Date(actualYear, 11, 27);
 
-  var cookieLifetime = (function() {
+    var filterList = filterImage.classList;
+    var lastFilter = filterList[filterList.length - 1];
+
     if (birthdayDate > actualDate) {
       birthdayDate.setFullYear(actualYear - 1, 11, 27);
     }
-    return Math.ceil((actualDate.valueOf() - birthdayDate.valueOf()) / (DAY));
-  })();
+    
+    var cookieLifetime = Math.ceil((actualDate.valueOf() - birthdayDate.valueOf()) / DAY);
 
-  
+    browserCookies.set('saveFilter', lastFilter, {
+      expires: cookieLifetime
+    });
+  };
 
   function getFilter() {
     var filterNone = document.getElementById('upload-filter-none');
@@ -338,12 +344,7 @@ var browserCookies = require('browser-cookies');
     cleanupResizer();
     updateBackground();
 
-    var filterList = filterImage.classList;
-    var lastFilter = filterList[filterList.length - 1];
-
-    browserCookies.set('saveFilter', lastFilter, {
-      expires: cookieLifetime
-    });
+    saveFilter();
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');

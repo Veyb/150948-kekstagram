@@ -7,6 +7,8 @@
 
 'use strict';
 
+var browserCookies = require('browser-cookies');
+
 (function() {
   /** @enum {string} */
   var FileType = {
@@ -248,9 +250,30 @@
     uploadForm.classList.remove('invisible');
   };
 
-  resizeForm.onchange = function() {
+  resizeForm.oninput = function() {
     resizeFormIsValid();
   };
+
+  var SECOND = 1000;
+  var MINUTE = 60 * SECOND;
+  var HOUR = 60 * MINUTE;
+  var DAY = 24 * HOUR;
+
+  var actualDate = new Date();
+  var actualYear = actualDate.getFullYear();
+  var birthdayDate = new Date(actualYear, 11, 27);
+
+  var cookieLifetime = (function() {
+    if (birthdayDate > actualDate) {
+      birthdayDate.setFullYear(actualYear - 1, 11, 27);
+    }
+    return Math.ceil((actualDate.valueOf() - birthdayDate.valueOf()) / (DAY));
+  })();
+
+  var filterNone = document.getElementById('upload-filter-none');
+  var filterChrome = document.getElementById('upload-filter-chrome');
+  var filterSepia = document.getElementById('upload-filter-sepia');
+
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.
@@ -264,6 +287,21 @@
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
+
+      var saveFilter = browserCookies.get('saveFilter');
+
+      if (saveFilter) {
+        if (saveFilter == 'filter-none') {
+          filterNone.setAttribute('checked', '');
+        }
+        if (saveFilter == 'filter-chrome') {
+          filterChrome.setAttribute('checked', '');
+        }
+        if (saveFilter == 'filter-sepia') {
+          filterSepia.setAttribute('checked', '');
+        }
+        return filterImage.classList.add(saveFilter);
+      }
     }
   };
 
@@ -288,6 +326,13 @@
 
     cleanupResizer();
     updateBackground();
+
+    var filterList = filterImage.classList;
+    var lastFilter = filterList[filterList.length - 1];
+
+    browserCookies.set('saveFilter', lastFilter, {
+      expires: cookieLifetime
+    });
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');

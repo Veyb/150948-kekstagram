@@ -1,44 +1,57 @@
 'use strict';
 
-var filtersForm = document.querySelector('.filters');
+(function() {
 
-if (!filtersForm.classList.contains('hidden')) {
-  filtersForm.classList.add('hidden');
-}
+  var filtersForm = document.querySelector('.filters');
 
-function getTemplateElement(data) {
-  var template = document.getElementById('picture-template');
-
-  if ('content' in template) {
-    var element = template.content.querySelector('.picture').cloneNode(true);
-  } else {
-    element = template.querySelector('.picture').cloneNode(true);
+  if (!filtersForm.classList.contains('hidden')) {
+    filtersForm.classList.add('hidden');
   }
 
-  element.querySelector('.picture-comments').textContent = data.comments;
-  element.querySelector('.picture-likes').textContent = data.likes;
+  function getTemplateElement(data) {
+    var template = document.getElementById('picture-template');
 
-  var previewImage = new Image();
+    if ('content' in template) {
+      var element = template.content.querySelector('.picture').cloneNode(true);
+    } else {
+      element = template.querySelector('.picture').cloneNode(true);
+    }
 
-  previewImage.onload = function() {
-    element.getElementsByTagName('IMG')[0].width = 182;
-    element.getElementsByTagName('IMG')[0].height = 182;
-  };
+    element.querySelector('.picture-comments').textContent = data.comments;
+    element.querySelector('.picture-likes').textContent = data.likes;
 
-  previewImage.onerror = function() {
-    element.classList.add('picture-load-failure');
-  };
+    var previewImage = new Image();
+    var templateImg = element.getElementsByTagName('IMG')[0];
+    var imageLoadTimeout;
 
-  previewImage.src = data.url;
-  element.getElementsByTagName('IMG')[0].src = previewImage.src;
+    previewImage.onload = function() {
+      clearTimeout(imageLoadTimeout);
+      templateImg.width = 182;
+      templateImg.height = 182;
+    };
 
-  return element;
-}
+    previewImage.onerror = function() {
+      element.classList.add('picture-load-failure');
+    };
 
-window.pictures.forEach(function(picture) {
-  var picturesContainer = document.querySelector('.pictures');
+    previewImage.src = data.url;
+    templateImg.src = previewImage.src;
 
-  picturesContainer.appendChild(getTemplateElement(picture));
-});
+    var IMAGE_TIMEOUT = 10000;
 
-filtersForm.classList.remove('hidden');
+    imageLoadTimeout = setTimeout(function() {
+      previewImage.src = '';
+      element.classList.add('picture-load-failure');
+    }, IMAGE_TIMEOUT);
+
+    return element;
+  }
+
+  window.pictures.forEach(function(picture) {
+    var picturesContainer = document.querySelector('.pictures');
+
+    picturesContainer.appendChild(getTemplateElement(picture));
+  });
+
+  filtersForm.classList.remove('hidden');
+})();

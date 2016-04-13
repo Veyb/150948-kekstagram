@@ -299,10 +299,6 @@ var browserCookies = require('browser-cookies');
     return filterImage.classList.add(currentFilter);
   }
 
-  // var filterNone = document.getElementById('upload-filter-none');
-  // var filterChrome = document.getElementById('upload-filter-chrome');
-  // var filterSepia = document.getElementById('upload-filter-sepia');
-
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.

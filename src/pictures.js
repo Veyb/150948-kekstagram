@@ -10,9 +10,10 @@
 
   function getTemplateElement(data) {
     var template = document.getElementById('picture-template');
+    var element;
 
     if ('content' in template) {
-      var element = template.content.querySelector('.picture').cloneNode(true);
+      element = template.content.querySelector('.picture').cloneNode(true);
     } else {
       element = template.querySelector('.picture').cloneNode(true);
     }

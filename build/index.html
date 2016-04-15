@@ -42,8 +42,7 @@
       <button class="upload-form-controls-fwd" type="submit" id="resize-fwd" name="fwd"></button>
     </fieldset>
 
-    <div class="tooltip-message invisible">
-    </div>
+    <div class="tooltip-message invisible"></div>
   </form>
 
   <form class="upload-form upload-filter invisible" id="upload-filter" method="post" enctype="multipart/form-data">
@@ -91,6 +90,13 @@
   </a>
 </template>
 
+<script>
+  var pictures = [];
+  var __picturesLoadCallback = function(data) {
+    pictures = data;
+  }
+</script>
+<script src="//up.htmlacademy.ru/assets/js_intensive/jsonp/pictures.js"></script>
 <script src="./js/main.js"></script>
 
 </body>

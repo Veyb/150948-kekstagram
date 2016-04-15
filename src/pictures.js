@@ -23,12 +23,11 @@
 
     var previewImage = new Image();
     var templateImg = element.getElementsByTagName('IMG')[0];
-    var imageLoadTimeout;
 
     previewImage.onload = function() {
-      clearTimeout(imageLoadTimeout);
       templateImg.width = 182;
       templateImg.height = 182;
+      templateImg.src = previewImage.src;
     };
 
     previewImage.onerror = function() {
@@ -36,14 +35,6 @@
     };
 
     previewImage.src = data.url;
-    templateImg.src = previewImage.src;
-
-    var IMAGE_TIMEOUT = 10000;
-
-    imageLoadTimeout = setTimeout(function() {
-      previewImage.src = '';
-      element.classList.add('picture-load-failure');
-    }, IMAGE_TIMEOUT);
 
     return element;
   }

@@ -3,6 +3,12 @@
 (function() {
 
   var filtersForm = document.querySelector('.filters');
+  var picturesContainer = document.querySelector('.pictures');
+
+  var pictures = [];
+
+  /** @constant {string} */
+  var PICTURES_LOAD_URL = '//o0.github.io/assets/json/pictures.json';
 
   if (!filtersForm.classList.contains('hidden')) {
     filtersForm.classList.add('hidden');
@@ -39,10 +45,36 @@
     return element;
   }
 
-  window.pictures.forEach(function(picture) {
-    var picturesContainer = document.querySelector('.pictures');
 
-    picturesContainer.appendChild(getTemplateElement(picture));
+  /** @param {function(Array.<Object>)} callback */
+  var getPictures = function(callback) {
+    var xhr = new XMLHttpRequest();
+
+    picturesContainer.classList.add('pictures-loading');
+
+    /** @param {ProgressEvent} */
+    xhr.onload = function(evt) {
+      var loadedData = JSON.parse(evt.target.response);
+      callback(loadedData);
+    };
+
+    xhr.open('GET', PICTURES_LOAD_URL);
+    xhr.send();
+  };
+
+  /** @param {Array.<Object>} elements */
+  var renderPictures = function(elements) {
+    elements.forEach(function(picture) {
+      picturesContainer.appendChild(getTemplateElement(picture));
+    });
+  };
+
+  // picturesContainer.classList.remove('pictures-loading');
+
+  getPictures(function(loadedPictures) {
+    pictures = loadedPictures;
+    renderPictures(pictures);
+    // debugger;
   });
 
   filtersForm.classList.remove('hidden');

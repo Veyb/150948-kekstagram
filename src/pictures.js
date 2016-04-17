@@ -18,7 +18,6 @@
   /** @constant {Filter} */
   var DEFAULT_FILTER = Filter.POPULARS;
 
-
   /** @constant {string} */
   var PICTURES_LOAD_URL = '//o0.github.io/assets/json/pictures.json';
 
@@ -61,7 +60,6 @@
 
     return element;
   }
-
 
   /** @param {function(Array.<Object>)} callback */
   var getPictures = function(callback) {

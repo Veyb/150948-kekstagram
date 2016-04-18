@@ -111,7 +111,6 @@
           var actualDate = new Date();
           var minFilterDate = actualDate.valueOf() - filterPeriod;
           var filterDate = new Date(element.date);
-
           return filterDate.valueOf() > minFilterDate;
         });
         break;
@@ -126,8 +125,10 @@
   };
 
   var setFilterEnable = function(filter) {
+    var currentFilter = document.getElementById(filter);
     var filteredPictures = getFilteredPictures(pictures, filter);
     renderPictures(filteredPictures);
+    currentFilter.setAttribute('checked', '');
   };
 
   filtersForm.addEventListener('click', function(event) {

@@ -8,6 +8,9 @@
   /** @type {Array.<Object>} */
   var pictures = [];
 
+  /** @type {Array.<Object>} */
+  var filteredPictures = [];
+
   /** @enum {number} */
   var Filter = {
     'POPULARS': 'filter-popular',
@@ -17,6 +20,12 @@
 
   /** @constant {Filter} */
   var DEFAULT_FILTER = Filter.POPULARS;
+
+  /** @constant {number} */
+  var PAGE_SIZE = 12;
+
+  /** @type {number} */
+  var pageNumber = 0;
 
   /** @constant {string} */
   var PICTURES_LOAD_URL = '//o0.github.io/assets/json/pictures.json';
@@ -30,7 +39,7 @@
     filtersForm.classList.add('hidden');
   }
 
-  function getTemplateElement(data) {
+  function getTemplateElement(data, container) {
     var template = document.getElementById('picture-template');
     var element;
 
@@ -58,6 +67,7 @@
 
     previewImage.src = data.url;
 
+    container.appendChild(element);
     return element;
   }
 
@@ -84,12 +94,35 @@
   };
 
   /** @param {Array.<Object>} elements */
-  var renderPictures = function(elements) {
-    picturesContainer.innerHTML = '';
+  var renderPictures = function(elements, page) {
+    var from = page * PAGE_SIZE;
+    var to = from + PAGE_SIZE;
 
-    elements.forEach(function(picture) {
-      picturesContainer.appendChild(getTemplateElement(picture));
+    elements.slice(from, to).forEach(function(picture) {
+      getTemplateElement(picture, picturesContainer);
     });
+  };
+
+  var isBottomReached = function() {
+    return document.body.offsetHeight - window.innerHeight - 100 <= document.body.scrollTop;
+  };
+
+  var isNextPageAvailable = function(elements, page, pageSize) {
+    return page < Math.floor(elements.length / pageSize);
+  };
+
+  var renderNextPage = function(reset) {
+    if (reset) {
+      pageNumber = 0;
+      picturesContainer.innerHTML = '';
+      renderPictures(filteredPictures, pageNumber);
+    }
+
+    while (isBottomReached() &&
+          isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
+      pageNumber++;
+      renderPictures(filteredPictures, pageNumber);
+    }
   };
 
   var getFilteredPictures = function(elements, filter) {
@@ -124,30 +157,35 @@
     return picturesToFilter;
   };
 
-  var setFilterEnable = function(filter) {
+  var setFilterEnabled = function(filter) {
+    filteredPictures = getFilteredPictures(pictures, filter);
+    renderNextPage(true);
+
     var currentFilter = document.getElementById(filter);
-    var filteredPictures = getFilteredPictures(pictures, filter);
-    renderPictures(filteredPictures);
     currentFilter.setAttribute('checked', '');
   };
 
-  filtersForm.addEventListener('click', function(event) {
-    switch (event.target.id) {
-      case Filter.POPULARS:
-        setFilterEnable(event.target.id);
-        break;
-      case Filter.NEWS:
-        setFilterEnable(event.target.id);
-        break;
-      case Filter.DISCUSSED:
-        setFilterEnable(event.target.id);
-        break;
+  filtersForm.addEventListener('click', function(evt) {
+    if (evt.target.classList.contains('filters-radio')) {
+      setFilterEnabled(evt.target.id);
     }
   });
 
+  var setScrollEnabled = function() {
+    var scrollTimeout;
+
+    window.addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function() {
+        renderNextPage();
+      }, 100);
+    });
+  };
+
   getPictures(function(loadedPictures) {
     pictures = loadedPictures;
-    setFilterEnable(DEFAULT_FILTER);
+    setFilterEnabled(DEFAULT_FILTER);
+    setScrollEnabled();
   });
 
   filtersForm.classList.remove('hidden');

@@ -141,9 +141,12 @@ var browserCookies = require('browser-cookies');
 
   function setResizeForm() {
     window.addEventListener('resizerchange', function() {
-      leftSize.value = currentResizer._resizeConstraint.x;
-      topSize.value = currentResizer._resizeConstraint.y;
-      squareSize.value = currentResizer._resizeConstraint.side;
+      var constraint = currentResizer.getConstraint();
+
+      leftSize.value = constraint.x;
+      topSize.value = constraint.y;
+      squareSize.value = constraint.side;
+      resizeFormIsValid();
     });
   }
 
@@ -232,10 +235,7 @@ var browserCookies = require('browser-cookies');
 
           setResizeForm();
           hideMessage();
-          resizeFormIsValid();
         });
-        // fileReader.onload = function() {
-        // };
 
         fileReader.readAsDataURL(element.files[0]);
       } else {
@@ -245,8 +245,6 @@ var browserCookies = require('browser-cookies');
       }
     }
   });
-  // uploadForm.onchange = function(evt) {
-  // };
 
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
@@ -262,14 +260,15 @@ var browserCookies = require('browser-cookies');
     resizeForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
   });
-  // resizeForm.onreset = function(evt) {
-  // };
 
   resizeForm.addEventListener('input', function() {
+    var x = parseInt(leftSize.value, 10);
+    var y = parseInt(topSize.value, 10);
+    var side = parseInt(squareSize.value, 10);
+
+    currentResizer.setConstraint(x, y, side);
     resizeFormIsValid();
   });
-  // resizeForm.oninput = function() {
-  // };
 
   var SECOND = 1000;
   var MINUTE = 60 * SECOND;
@@ -333,8 +332,6 @@ var browserCookies = require('browser-cookies');
       getFilter();
     }
   });
-  // resizeForm.onsubmit = function(evt) {
-  // };
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
@@ -346,8 +343,6 @@ var browserCookies = require('browser-cookies');
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
   });
-  // filterForm.onreset = function(evt) {
-  // };
 
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
@@ -365,8 +360,6 @@ var browserCookies = require('browser-cookies');
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
   });
-  // filterForm.onsubmit = function(evt) {
-  // };
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
@@ -393,8 +386,6 @@ var browserCookies = require('browser-cookies');
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   });
-  // filterForm.onchange = function() {
-  // };
 
   cleanupResizer();
   updateBackground();

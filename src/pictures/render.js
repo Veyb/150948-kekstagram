@@ -1,6 +1,7 @@
 'use strict';
 
 var utils = require('../utils');
+var gallery = require('../gallery');
 
 function getTemplateElement(data, container) {
   var template = document.getElementById('picture-template');
@@ -30,6 +31,23 @@ function getTemplateElement(data, container) {
 
   previewImage.src = data.url;
 
+  element.addEventListener('click', function(evt) {
+    var list = utils.filteredPictures;
+    var index = 0;
+
+    if (evt.target.nodeName === 'IMG') {
+      for (var i = 0; i < list.length; i++) {
+        if (data.url === list[i].url) {
+          index = i;
+        }
+      }
+      evt.preventDefault();
+      gallery.showGallery(list, index);
+    } else {
+      evt.preventDefault();
+    }
+  });
+
   container.appendChild(element);
   return element;
 }
@@ -44,21 +62,22 @@ var renderPictures = function(elements, page) {
   });
 };
 
+var renderNextPage = function(reset) {
+  if (reset) {
+    utils.pageNumber = 0;
+    utils.picturesContainer.innerHTML = '';
+    renderPictures(utils.filteredPictures, utils.pageNumber);
+  }
+
+  while (utils.isBottomReached() &&
+        utils.isNextPageAvailable(utils.pictures, utils.pageNumber, utils.PAGE_SIZE)) {
+    utils.pageNumber++;
+    renderPictures(utils.filteredPictures, utils.pageNumber);
+  }
+};
+
 module.exports = {
   getTemplateElement: getTemplateElement,
   renderPictures: renderPictures,
-
-  renderNextPage: function(reset) {
-    if (reset) {
-      utils.pageNumber = 0;
-      utils.picturesContainer.innerHTML = '';
-      renderPictures(utils.filteredPictures, utils.pageNumber);
-    }
-
-    while (utils.isBottomReached() &&
-          utils.isNextPageAvailable(utils.pictures, utils.pageNumber, utils.PAGE_SIZE)) {
-      utils.pageNumber++;
-      renderPictures(utils.filteredPictures, utils.pageNumber);
-    }
-  }
+  renderNextPage: renderNextPage
 };

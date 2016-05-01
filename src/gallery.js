@@ -22,12 +22,11 @@ var showGallery = function(pictures, index) {
 
   showGalleryPicture();
   galleryImage.addEventListener('click', onPhotoClick);
-
-  galleryContainer.classList.remove('invisible');
-
   document.addEventListener('keydown', onDocumentKeyDown);
   galleryClose.addEventListener('click', onCloseClick);
   galleryContainer.addEventListener('click', onContainerClick);
+
+  galleryContainer.classList.remove('invisible');
 };
 
 function hideGallery() {

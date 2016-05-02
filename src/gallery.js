@@ -8,6 +8,11 @@ var galleryComments = galleryContainer.querySelector('.comments-count');
 var galleryPictures = [];
 var currentPictureIndex = 0;
 
+var setGalleryPictures = function(pictures) {
+  galleryPictures = pictures;
+  return galleryPictures;
+};
+
 var showGalleryPicture = function() {
   var currentPicture = galleryPictures[currentPictureIndex];
 
@@ -16,29 +21,28 @@ var showGalleryPicture = function() {
   galleryComments.textContent = currentPicture.comments;
 };
 
-var showGallery = function(pictures, index) {
-  galleryPictures = pictures;
+var showGallery = function(index) {
   currentPictureIndex = index;
 
   showGalleryPicture();
-  galleryImage.addEventListener('click', onPhotoClick);
-  document.addEventListener('keydown', onDocumentKeyDown);
-  galleryClose.addEventListener('click', onCloseClick);
-  galleryContainer.addEventListener('click', onContainerClick);
+  galleryImage.addEventListener('click', _onPhotoClick);
+  document.addEventListener('keydown', _onDocumentKeyDown);
+  galleryClose.addEventListener('click', _onCloseClick);
+  galleryContainer.addEventListener('click', _onContainerClick);
 
   galleryContainer.classList.remove('invisible');
 };
 
 function hideGallery() {
-  galleryImage.removeEventListener('click', onPhotoClick);
-  document.removeEventListener('keydown', onDocumentKeyDown);
-  galleryClose.removeEventListener('click', onCloseClick);
-  galleryContainer.removeEventListener('click', onContainerClick);
+  galleryImage.removeEventListener('click', _onPhotoClick);
+  document.removeEventListener('keydown', _onDocumentKeyDown);
+  galleryClose.removeEventListener('click', _onCloseClick);
+  galleryContainer.removeEventListener('click', _onContainerClick);
 
   galleryContainer.classList.add('invisible');
 }
 
-function onPhotoClick() {
+function _onPhotoClick() {
   if (currentPictureIndex < galleryPictures.length) {
     currentPictureIndex++;
   }
@@ -48,23 +52,24 @@ function onPhotoClick() {
   showGalleryPicture();
 }
 
-function onDocumentKeyDown(evt) {
+function _onDocumentKeyDown(evt) {
   if (evt.keyCode === 27 && !galleryContainer.classList.contains('invisible')) {
     hideGallery();
   }
 }
 
-function onContainerClick(evt) {
+function _onContainerClick(evt) {
   if (evt.target.classList.contains('gallery-overlay')) {
     hideGallery();
   }
 }
 
-function onCloseClick(evt) {
+function _onCloseClick(evt) {
   evt.preventDefault();
   hideGallery();
 }
 
 module.exports = {
-  showGallery: showGallery
+  showGallery: showGallery,
+  setGalleryPictures: setGalleryPictures
 };

@@ -2,8 +2,9 @@
 
 var utils = require('../utils');
 var gallery = require('../gallery');
+var counter = 0;
 
-function getTemplateElement(data, container) {
+function getTemplateElement(data, container, idNumber) {
   var template = document.getElementById('picture-template');
   var element;
 
@@ -20,6 +21,7 @@ function getTemplateElement(data, container) {
   var templateImg = element.getElementsByTagName('IMG')[0];
 
   previewImage.onload = function() {
+    templateImg.id = idNumber;
     templateImg.width = utils.IMAGE_SIZE;
     templateImg.height = utils.IMAGE_SIZE;
     templateImg.src = previewImage.src;
@@ -36,13 +38,10 @@ function getTemplateElement(data, container) {
     var index = 0;
 
     if (evt.target.nodeName === 'IMG') {
-      for (var i = 0; i < list.length; i++) {
-        if (data.url === list[i].url) {
-          index = i;
-        }
-      }
+      index = evt.target.id;
       evt.preventDefault();
-      gallery.showGallery(list, index);
+      gallery.setGalleryPictures(list);
+      gallery.showGallery(index);
     } else {
       evt.preventDefault();
     }
@@ -58,7 +57,8 @@ var renderPictures = function(elements, page) {
   var to = from + utils.PAGE_SIZE;
 
   elements.slice(from, to).forEach(function(picture) {
-    getTemplateElement(picture, utils.picturesContainer);
+    getTemplateElement(picture, utils.picturesContainer, counter);
+    counter++;
   });
 };
 

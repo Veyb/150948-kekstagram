@@ -1,8 +1,10 @@
 'use strict';
 
 var utils = require('../utils');
+var gallery = require('../gallery');
+var counter = 0;
 
-function getTemplateElement(data, container) {
+function getTemplateElement(data, container, idNumber) {
   var template = document.getElementById('picture-template');
   var element;
 
@@ -19,6 +21,7 @@ function getTemplateElement(data, container) {
   var templateImg = element.getElementsByTagName('IMG')[0];
 
   previewImage.onload = function() {
+    templateImg.id = idNumber;
     templateImg.width = utils.IMAGE_SIZE;
     templateImg.height = utils.IMAGE_SIZE;
     templateImg.src = previewImage.src;
@@ -30,6 +33,20 @@ function getTemplateElement(data, container) {
 
   previewImage.src = data.url;
 
+  element.addEventListener('click', function(evt) {
+    var list = utils.filteredPictures;
+    var index = 0;
+
+    if (evt.target.nodeName === 'IMG') {
+      index = evt.target.id;
+      evt.preventDefault();
+      gallery.setGalleryPictures(list);
+      gallery.showGallery(index);
+    } else {
+      evt.preventDefault();
+    }
+  });
+
   container.appendChild(element);
   return element;
 }
@@ -40,25 +57,27 @@ var renderPictures = function(elements, page) {
   var to = from + utils.PAGE_SIZE;
 
   elements.slice(from, to).forEach(function(picture) {
-    getTemplateElement(picture, utils.picturesContainer);
+    getTemplateElement(picture, utils.picturesContainer, counter);
+    counter++;
   });
+};
+
+var renderNextPage = function(reset) {
+  if (reset) {
+    utils.pageNumber = 0;
+    utils.picturesContainer.innerHTML = '';
+    renderPictures(utils.filteredPictures, utils.pageNumber);
+  }
+
+  while (utils.isBottomReached() &&
+        utils.isNextPageAvailable(utils.pictures, utils.pageNumber, utils.PAGE_SIZE)) {
+    utils.pageNumber++;
+    renderPictures(utils.filteredPictures, utils.pageNumber);
+  }
 };
 
 module.exports = {
   getTemplateElement: getTemplateElement,
   renderPictures: renderPictures,
-
-  renderNextPage: function(reset) {
-    if (reset) {
-      utils.pageNumber = 0;
-      utils.picturesContainer.innerHTML = '';
-      renderPictures(utils.filteredPictures, utils.pageNumber);
-    }
-
-    while (utils.isBottomReached() &&
-          utils.isNextPageAvailable(utils.pictures, utils.pageNumber, utils.PAGE_SIZE)) {
-      utils.pageNumber++;
-      renderPictures(utils.filteredPictures, utils.pageNumber);
-    }
-  }
+  renderNextPage: renderNextPage
 };

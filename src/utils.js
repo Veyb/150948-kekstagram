@@ -25,6 +25,9 @@ module.exports = {
   /** @type {Array.<Holet>} */
   renderedPictures: [],
 
+  /** @type {number} */
+  counter: 0,
+
   /** @type {Array.<Object>} */
   filteredPictures: [],
 

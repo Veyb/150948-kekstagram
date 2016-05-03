@@ -33,7 +33,13 @@ function getTemplateElement(data, container, idNumber) {
 
   previewImage.src = data.url;
 
-  element.addEventListener('click', function(evt) {
+  return element;
+}
+
+var Photo = function(data, container) {
+  this.data = data;
+  this.element = getTemplateElement(data, container, counter);
+  this.onPhotoClick = function(evt) {
     var list = utils.filteredPictures;
     var index = 0;
 
@@ -45,37 +51,16 @@ function getTemplateElement(data, container, idNumber) {
     } else {
       evt.preventDefault();
     }
-  });
+  };
 
-  container.appendChild(element);
-  return element;
-}
+  this.remove = function() {
+    this.element.addEventListener('click', this.onPhotoClick);
+    this.element.parentNode.removeChild(this.element);
+  };
 
-// var Photo = function(data, container) {
-//   this.data = data;
-//   this.element = getTemplateElement(data, container, counter);
-//   this.onPhotoClick = function(evt) {
-//     var list = utils.filteredPictures;
-//     var index = 0;
-//
-//     if (evt.target.nodeName === 'IMG') {
-//       index = evt.target.id;
-//       evt.preventDefault();
-//       gallery.setGalleryPictures(list);
-//       gallery.showGallery(index);
-//     } else {
-//       evt.preventDefault();
-//     }
-//   };
-//
-//   this.remove = function() {
-//     this.element.addEventListener('click', this.onPhotoClick);
-//     this.element.parentNode.removeChild(this.element);
-//   };
-//
-//   this.element.addEventListener('click', this.onPhotoClick);
-//   container.appendChild(this.element);
-// };
+  this.element.addEventListener('click', this.onPhotoClick);
+  container.appendChild(this.element);
+};
 
 /** @param {Array.<Object>} elements */
 var renderPictures = function(elements, page) {
@@ -83,8 +68,7 @@ var renderPictures = function(elements, page) {
   var to = from + utils.PAGE_SIZE;
 
   elements.slice(from, to).forEach(function(picture) {
-    getTemplateElement(picture, utils.picturesContainer, counter);
-    // utils.renderedPictures.push(new Photo(picture, utils.picturesContainer));
+    utils.renderedPictures.push(new Photo(picture, utils.picturesContainer));
     counter++;
   });
 };
@@ -92,11 +76,11 @@ var renderPictures = function(elements, page) {
 var renderNextPage = function(reset) {
   if (reset) {
     utils.pageNumber = 0;
-    utils.picturesContainer.innerHTML = '';
-    // utils.renderedPictures.forEach(function(picture) {
-    //   picture.remove();
-    // });
-    // utils.renderedPictures = [];
+    counter = 0;
+    utils.renderedPictures.forEach(function(picture) {
+      picture.remove();
+    });
+    utils.renderedPictures = [];
     renderPictures(utils.filteredPictures, utils.pageNumber);
   }
 
@@ -110,6 +94,6 @@ var renderNextPage = function(reset) {
 module.exports = {
   getTemplateElement: getTemplateElement,
   renderPictures: renderPictures,
-  renderNextPage: renderNextPage
-  // Photo: Photo
+  renderNextPage: renderNextPage,
+  Photo: Photo
 };

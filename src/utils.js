@@ -22,6 +22,12 @@ module.exports = {
   /** @type {number} */
   PAGE_SIZE: 12,
 
+  /** @type {Array.<Holet>} */
+  renderedPictures: [],
+
+  /** @type {number} */
+  counter: 0,
+
   /** @type {Array.<Object>} */
   filteredPictures: [],
 

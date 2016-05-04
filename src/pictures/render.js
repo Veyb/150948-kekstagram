@@ -1,55 +1,7 @@
 'use strict';
 
 var utils = require('../utils');
-var gallery = require('../gallery');
-var counter = 0;
-
-function getTemplateElement(data, container, idNumber) {
-  var template = document.getElementById('picture-template');
-  var element;
-
-  if ('content' in template) {
-    element = template.content.querySelector('.picture').cloneNode(true);
-  } else {
-    element = template.querySelector('.picture').cloneNode(true);
-  }
-
-  element.querySelector('.picture-comments').textContent = data.comments;
-  element.querySelector('.picture-likes').textContent = data.likes;
-
-  var previewImage = new Image();
-  var templateImg = element.getElementsByTagName('IMG')[0];
-
-  previewImage.onload = function() {
-    templateImg.id = idNumber;
-    templateImg.width = utils.IMAGE_SIZE;
-    templateImg.height = utils.IMAGE_SIZE;
-    templateImg.src = previewImage.src;
-  };
-
-  previewImage.onerror = function() {
-    element.classList.add('picture-load-failure');
-  };
-
-  previewImage.src = data.url;
-
-  element.addEventListener('click', function(evt) {
-    var list = utils.filteredPictures;
-    var index = 0;
-
-    if (evt.target.nodeName === 'IMG') {
-      index = evt.target.id;
-      evt.preventDefault();
-      gallery.setGalleryPictures(list);
-      gallery.showGallery(index);
-    } else {
-      evt.preventDefault();
-    }
-  });
-
-  container.appendChild(element);
-  return element;
-}
+var renderPhoto = require('./render-photo');
 
 /** @param {Array.<Object>} elements */
 var renderPictures = function(elements, page) {
@@ -57,15 +9,19 @@ var renderPictures = function(elements, page) {
   var to = from + utils.PAGE_SIZE;
 
   elements.slice(from, to).forEach(function(picture) {
-    getTemplateElement(picture, utils.picturesContainer, counter);
-    counter++;
+    utils.renderedPictures.push(new renderPhoto.Photo(picture, utils.picturesContainer));
+    utils.counter++;
   });
 };
 
 var renderNextPage = function(reset) {
   if (reset) {
     utils.pageNumber = 0;
-    utils.picturesContainer.innerHTML = '';
+    utils.counter = 0;
+    utils.renderedPictures.forEach(function(picture) {
+      picture.remove();
+    });
+    utils.renderedPictures = [];
     renderPictures(utils.filteredPictures, utils.pageNumber);
   }
 
@@ -77,7 +33,5 @@ var renderNextPage = function(reset) {
 };
 
 module.exports = {
-  getTemplateElement: getTemplateElement,
-  renderPictures: renderPictures,
   renderNextPage: renderNextPage
 };

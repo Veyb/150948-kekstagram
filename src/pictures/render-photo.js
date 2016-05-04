@@ -1,7 +1,7 @@
 'use strict';
 
 var utils = require('../utils');
-var gallery = require('../gallery');
+var Gallery = require('../gallery');
 
 function getTemplateElement(data, idNumber) {
   var template = document.getElementById('picture-template');
@@ -45,8 +45,8 @@ var Photo = function(data, container) {
     if (evt.target.nodeName === 'IMG') {
       index = evt.target.id;
       evt.preventDefault();
-      gallery.setGalleryPictures(list);
-      gallery.showGallery(index);
+      Gallery.setGalleryPictures(list);
+      Gallery.showGallery(index);
     } else {
       evt.preventDefault();
     }

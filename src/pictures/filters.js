@@ -58,7 +58,7 @@ var getFilter = function(filterImage) {
   var filterNone = document.getElementById('upload-filter-none');
   var filterChrome = document.getElementById('upload-filter-chrome');
   var filterSepia = document.getElementById('upload-filter-sepia');
-  var currentFilter = localStorage.getItem('filter');
+  var currentFilter = localStorage.getItem('filter') || 'filter-none';
 
   if (currentFilter) {
     if (currentFilter === 'filter-none') {

@@ -2,7 +2,6 @@
 
 var utils = require('../utils');
 var render = require('./render');
-var browserCookies = require('browser-cookies');
 
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
@@ -49,30 +48,17 @@ var getFilteredPictures = function(elements, filter) {
 };
 
 var saveFilter = function(filterImage) {
-  var actualDate = new Date();
-  var actualYear = actualDate.getFullYear();
-  var birthdayDate = new Date(actualYear, 11, 27);
-
   var filterList = filterImage.classList;
   var lastFilter = filterList[filterList.length - 1];
 
-  if (birthdayDate > actualDate) {
-    birthdayDate.setFullYear(actualYear - 1, 11, 27);
-  }
-
-  var cookieLifetime = Math.ceil((actualDate.valueOf() - birthdayDate.valueOf()) / DAY);
-
-  browserCookies.set('saveFilter', lastFilter, {
-    expires: cookieLifetime
-  });
+  localStorage.setItem('filter', lastFilter);
 };
 
 var getFilter = function(filterImage) {
   var filterNone = document.getElementById('upload-filter-none');
   var filterChrome = document.getElementById('upload-filter-chrome');
   var filterSepia = document.getElementById('upload-filter-sepia');
-
-  var currentFilter = browserCookies.get('saveFilter');
+  var currentFilter = localStorage.getItem('filter') || 'filter-none';
 
   if (currentFilter) {
     if (currentFilter === 'filter-none') {
@@ -98,7 +84,6 @@ var setFilterEnabled = function(filter) {
 
 module.exports = {
   POPULARS: 'filter-popular',
-  getFilteredPictures: getFilteredPictures,
   saveFilter: saveFilter,
   getFilter: getFilter,
   setFilterEnabled: setFilterEnabled

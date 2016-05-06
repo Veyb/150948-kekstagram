@@ -1,7 +1,7 @@
 'use strict';
 
 var utils = require('../utils');
-var renderPhoto = require('./render-photo');
+var Photo = require('./render-photo');
 var Gallery = require('../gallery');
 
 /** @param {Array.<Object>} elements */
@@ -10,7 +10,7 @@ var renderPictures = function(elements, page) {
   var to = from + utils.PAGE_SIZE;
 
   elements.slice(from, to).forEach(function(picture) {
-    utils.renderedPictures.push(new renderPhoto.Photo(picture, utils.picturesContainer));
+    utils.renderedPictures.push(new Photo(picture, utils.picturesContainer));
     utils.counter++;
   });
   Gallery.setGalleryPictures(utils.filteredPictures);

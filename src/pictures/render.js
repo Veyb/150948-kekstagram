@@ -2,6 +2,7 @@
 
 var utils = require('../utils');
 var renderPhoto = require('./render-photo');
+var Gallery = require('../gallery');
 
 /** @param {Array.<Object>} elements */
 var renderPictures = function(elements, page) {
@@ -12,6 +13,8 @@ var renderPictures = function(elements, page) {
     utils.renderedPictures.push(new renderPhoto.Photo(picture, utils.picturesContainer));
     utils.counter++;
   });
+  Gallery.setGalleryPictures(utils.filteredPictures);
+  Gallery._onHashChange();
 };
 
 var renderNextPage = function(reset) {
